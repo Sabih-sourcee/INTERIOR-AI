@@ -32,20 +32,41 @@ if (IS_VERTEX_AI) {
 // Initialize Gemini AI (server-side only - key never exposed to client)
 const ai = IS_VERTEX_AI ? null : new GoogleGenAI({ apiKey: API_KEY });
 
-// Helper function for Vertex AI API calls using API key in query parameter
-async function callVertexAI(model: string, contents: any, config?: any): Promise<any> {
-  // Use global endpoint with API key as query parameter (like the cURL example)
-  const url = `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent?key=${API_KEY}`;
+// Helper function for Vertex AI API calls with OAuth Bearer token
+async function callVertexAI(model: string, contents: any, config?: any, isImageGeneration: boolean = false): Promise<any> {
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'able-brace-493911-d8';
+  const location = process.env.VERTEX_AI_LOCATION || 'us-central1';
+  
+  // Use regional endpoint with Bearer token (proper Vertex AI format)
+  const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
+  
+  // Get OAuth access token from service account
+  const auth = new GoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/cloud-platform']
+  });
+  const client = await auth.getClient();
+  const accessToken = await client.getAccessToken();
+  
+  const requestBody: any = {
+    contents,
+    generationConfig: config || {},
+  };
+  
+  // Add imageConfig for image generation tasks
+  if (isImageGeneration) {
+    requestBody.generationConfig.imageConfig = {
+      aspectRatio: "16:9",
+      mimeType: "image/png"
+    };
+  }
   
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken.token}`,
     },
-    body: JSON.stringify({
-      contents,
-      generationConfig: config || {},
-    }),
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
@@ -177,18 +198,45 @@ app.post('/api/redesign-room', async (req, res) => {
     }
     
     const prompt = `
-      INSTRUCTIONS: High-Fidelity Furniture Repositioning & Room Reconstruction.
+      INSTRUCTIONS: Professional Interior Space Optimization & Furniture Repositioning.
       
-      Based on the original room image and this analysis: "${analysis}", generate a reconstructed visual.
+      Based on the original room image and this analysis: "${analysis}", create a redesigned room visualization.
       
-      CORE COMMANDS:
-      1. STRICT PROPERTY PRESERVATION: Each piece of furniture (Bed, Chair, Desk, Mirror, Wardrobe, Stands, etc.) MUST keep its original design, color, materials, and features. Do NOT replace them with different models.
-      2. SPATIAL REARRANGEMENT: Move the identified furniture to the new optimized positions suggested in the analysis.
-      3. CLEANING & CLARITY: Remove all transient clutter (mess, loose items, garbage) to ensure the image is high-definition, clear, and professional.
-      4. BEDSHEET EXCEPTION: You are permitted to change the Bedding/Bedsheet to a more premium or organized style that complements the new room aura.
-      5. FAITHFUL RECONSTRUCTION: The room should look like the same room, with the same floor, walls, and architectural anchors, just organized and optimized for its "Aura".
+      CRITICAL REQUIREMENTS:
       
-      OUTPUT: A crystal-clear, high-quality photograph of the redesigned room.
+      1. FURNITURE REPOSITIONING (MOST IMPORTANT):
+         - Identify every piece of furniture in the room (bed, wardrobe, desk, chair, mirror, nightstands, shelves, etc.)
+         - Physically MOVE each furniture item to a new, more optimal position
+         - Create better flow and space utilization
+         - Arrange furniture for maximum aesthetic appeal and functionality
+         - DO NOT just enhance image quality - ACTUALLY REPOSITION the furniture
+      
+      2. STRICT FURNITURE PRESERVATION:
+         - Keep the EXACT same furniture items - same design, color, material, size
+         - DO NOT replace furniture with different models
+         - DO NOT remove any furniture pieces
+         - Only their POSITION should change
+      
+      3. ROOM CLEANING & ORGANIZATION:
+         - Organize and tidy up loose items (books, clothes, papers)
+         - Neatly arrange items on surfaces
+         - Make the bed properly
+         - Ensure cables/items are neatly placed
+         - DO NOT remove items - just organize them beautifully
+      
+      4. AESTHETIC ENHANCEMENT:
+         - Optimize lighting and shadows naturally
+         - Ensure the room looks professionally designed
+         - Maintain the same room structure (walls, floor, windows)
+         - Create a cohesive, magazine-worthy interior design
+      
+      5. OUTPUT SPECIFICATIONS:
+         - Generate a high-resolution, photorealistic image
+         - Same camera angle/perspective as original
+         - Show the room AFTER furniture has been repositioned
+         - Professional real-estate photography quality
+      
+      THE RESULT SHOULD SHOW THE SAME FURNITURE IN NEW, BETTER POSITIONS WITH A CLEAN, ORGANIZED, AESTHETIC ROOM.
     `;
 
     let imageData: string | null = null;
@@ -207,7 +255,7 @@ app.post('/api/redesign-room', async (req, res) => {
 
       const result = await callVertexAI("gemini-2.5-flash-image", contents, {
         responseModalities: ["TEXT", "IMAGE"]
-      });
+      }, true);
 
       const candidates = result.candidates || [];
       if (candidates.length === 0) {
