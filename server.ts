@@ -32,25 +32,15 @@ if (IS_VERTEX_AI) {
 // Initialize Gemini AI (server-side only - key never exposed to client)
 const ai = IS_VERTEX_AI ? null : new GoogleGenAI({ apiKey: API_KEY });
 
-// Helper function for Vertex AI API calls with OAuth
+// Helper function for Vertex AI API calls using API key in query parameter
 async function callVertexAI(model: string, contents: any, config?: any): Promise<any> {
-  const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'able-brace-493911-d8';
-  const location = process.env.VERTEX_AI_LOCATION || 'us-central1';
-  
-  const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
-  
-  // Get OAuth access token from service account (works automatically in Cloud Run)
-  const auth = new GoogleAuth({
-    scopes: ['https://www.googleapis.com/auth/cloud-platform']
-  });
-  const client = await auth.getClient();
-  const accessToken = await client.getAccessToken();
+  // Use global endpoint with API key as query parameter (like the cURL example)
+  const url = `https://aiplatform.googleapis.com/v1/publishers/google/models/${model}:generateContent?key=${API_KEY}`;
   
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken.token}`,
     },
     body: JSON.stringify({
       contents,
@@ -121,7 +111,7 @@ app.post('/api/analyze-room', async (req, res) => {
         }
       ];
 
-      const result = await callVertexAI("gemini-2.5-flash-lite-preview-001", contents, {
+      const result = await callVertexAI("gemini-2.5-flash-lite", contents, {
         responseMimeType: "application/json"
       });
 
@@ -215,7 +205,7 @@ app.post('/api/redesign-room', async (req, res) => {
         }
       ];
 
-      const result = await callVertexAI("gemini-2.5-flash-preview-001", contents, {
+      const result = await callVertexAI("gemini-2.5-flash", contents, {
         responseModalities: ["TEXT", "IMAGE"]
       });
 
