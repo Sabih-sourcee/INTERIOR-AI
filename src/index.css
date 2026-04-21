@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-paper: #050505;
+  --color-ink: #E5E7EB;
+  --color-accent: #00F2FF;
+  --color-ai-purple: #7000FF;
+}
+
+@layer base {
+  body {
+    @apply bg-paper text-ink font-sans antialiased overflow-x-hidden;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/3 backdrop-blur-xl border border-white/8;
+  }
+
+  .ai-gradient {
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-ai-purple) 100%);
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+  }
+
+  .scanner-line {
+    @apply h-[2px] w-full absolute left-0 opacity-60 z-10;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    animation: scan 3s ease-in-out infinite;
+  }
+
+  .bounding-box {
+    @apply border-2 border-accent absolute rounded-sm shadow-[0_0_15px_rgba(0,242,255,0.3)] bg-accent/5;
+  }
+
+  .furniture-label {
+    @apply absolute -top-6 -left-[2px] bg-accent text-black text-[10px] font-extrabold px-1.5 py-0.5 uppercase rounded-t-sm;
+  }
+}
+
+@keyframes scan {
+  0%, 100% { top: 10%; }
+  50% { top: 90%; }
+}
+

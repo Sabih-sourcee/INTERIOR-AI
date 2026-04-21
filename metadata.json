@@ -1,0 +1,12 @@
+{
+  "name": "AuraRoom: AI Interior Redesign",
+  "description": "Analyze your room and reimagined furniture layouts for optimal aesthetics using Gemini 2.0 Flash.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "Image Analysis",
+    "Furniture Placement Recommendation",
+    "Generative Interior Design"
+  ]
+}
