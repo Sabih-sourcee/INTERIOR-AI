@@ -205,7 +205,7 @@ app.post('/api/redesign-room', async (req, res) => {
         }
       ];
 
-      const result = await callVertexAI("gemini-2.5-flash", contents, {
+      const result = await callVertexAI("gemini-2.5-flash-image", contents, {
         responseModalities: ["TEXT", "IMAGE"]
       });
 
