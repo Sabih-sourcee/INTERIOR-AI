@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y dumb-init && rm -rf /var/lib/apt/lists/
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist ./dist
