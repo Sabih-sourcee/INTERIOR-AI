@@ -121,7 +121,7 @@ app.post('/api/analyze-room', async (req, res) => {
         }
       ];
 
-      const result = await callVertexAI("gemini-1.5-flash", contents, {
+      const result = await callVertexAI("gemini-2.5-flash-lite", contents, {
         responseMimeType: "application/json"
       });
 
