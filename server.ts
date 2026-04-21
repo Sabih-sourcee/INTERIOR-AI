@@ -121,7 +121,7 @@ app.post('/api/analyze-room', async (req, res) => {
         }
       ];
 
-      const result = await callVertexAI("gemini-2.5-flash-lite", contents, {
+      const result = await callVertexAI("gemini-2.5-flash-lite-preview-001", contents, {
         responseMimeType: "application/json"
       });
 
@@ -215,7 +215,7 @@ app.post('/api/redesign-room', async (req, res) => {
         }
       ];
 
-      const result = await callVertexAI("gemini-2.0-flash-exp-image-generation", contents, {
+      const result = await callVertexAI("gemini-2.5-flash-preview-001", contents, {
         responseModalities: ["TEXT", "IMAGE"]
       });
 
