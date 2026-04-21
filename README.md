@@ -1,5 +1,5 @@
 <div align="center">
-<h1>AuraRoom: AI Interior Redesign</h1>
+<h1>Interior-AI: AI Interior Redesign</h1>
 <p>Transform your space with AI-powered spatial optimization</p>
 </div>
 
