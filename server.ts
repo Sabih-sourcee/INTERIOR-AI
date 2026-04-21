@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from "@google/genai";
+import { GoogleAuth } from 'google-auth-library';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,18 +32,25 @@ if (IS_VERTEX_AI) {
 // Initialize Gemini AI (server-side only - key never exposed to client)
 const ai = IS_VERTEX_AI ? null : new GoogleGenAI({ apiKey: API_KEY });
 
-// Helper function for Vertex AI API calls
+// Helper function for Vertex AI API calls with OAuth
 async function callVertexAI(model: string, contents: any, config?: any): Promise<any> {
   const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'able-brace-493911-d8';
   const location = process.env.VERTEX_AI_LOCATION || 'us-central1';
   
   const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
   
+  // Get OAuth access token from service account (works automatically in Cloud Run)
+  const auth = new GoogleAuth({
+    scopes: ['https://www.googleapis.com/auth/cloud-platform']
+  });
+  const client = await auth.getClient();
+  const accessToken = await client.getAccessToken();
+  
   const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${API_KEY}`,
+      'Authorization': `Bearer ${accessToken.token}`,
     },
     body: JSON.stringify({
       contents,
