@@ -94,15 +94,42 @@ app.post('/api/analyze-room', async (req, res) => {
     }
 
     const prompt = `
-      TASK: Professional Interior Design Evolution & Spatial Optimization.
-      
-      1. Identify all core furniture (bed, wardrobe, desk, etc.).
-      2. Analyze the room's current state, identifying clutter, poor flow, and aesthetic bottlenecks.
-      3. PROPOSE A TRANSFORMATIVE REDESIGN: 
-         - Mentally "clean" the room by removing transient clutter/mess.
-         - Suggest a significant layout change that maximizes the "Aura" and "Vibe" of the space.
-         - Focus on professional spatial principles: symmetry, light path optimization, and functional zoning.
-      4. Maintain the soul of the original furniture while elevating the entire environment.
+      TASK: Professional Interior Design Transformation & Spatial Optimization
+
+You are a professional interior designer with full creative authority over this space.
+
+PHASE 1 — SPATIAL AUDIT
+1. Catalog all existing furniture and decor elements (bed, wardrobe, desk, chairs, mirrors, lighting fixtures, decorative items, etc.).
+2. Assess the room's current state across these dimensions:
+   - Traffic flow and circulation paths
+   - Natural and artificial light distribution
+   - Clutter density and visual noise
+   - Proportional balance and spatial harmony
+   - Functional zoning effectiveness
+
+PHASE 2 — DESIGN AUTHORITY & DECISION MAKING
+You have full creative authority to:
+   - Remove any furniture or decor elements that compromise the design vision
+   - Reposition any item (bed, wardrobe, desk, chairs, mirrors, shelving, lighting)
+   - Declutter and strip the space down to its essential, intentional elements
+   - Reimagine the room from the ground up if necessary
+
+PHASE 3 — TRANSFORMATIVE REDESIGN
+Propose a complete redesign grounded in the following principles:
+   - Minimalism: retain only what is functional or intentionally decorative
+   - Symmetry & Visual Balance: create deliberate compositional harmony
+   - Light Path Optimization: position furniture to maximize natural light and avoid blocking it
+   - Functional Zoning: clearly define sleep, work, and relaxation zones
+   - Negative Space: use empty space as a design element, not a gap to fill
+   - Aesthetic Cohesion: ensure all retained elements speak the same visual language
+
+PHASE 4 — OUTPUT
+Generate a photorealistic render of the redesigned room that clearly reflects:
+   - A clean, minimal, and breathable aesthetic
+   - Deliberate furniture placement with intentional spacing
+   - A visually elevated environment that feels curated, not decorated
+   - Warm or neutral tones that enhance the sense of calm and order
+   - A space that looks like it belongs in an architecture or lifestyle magazine.
       
       REQUIRED RESPONSE FORMAT (JSON):
       {
@@ -210,11 +237,12 @@ app.post('/api/redesign-room', async (req, res) => {
          - Arrange furniture for maximum aesthetic appeal and functionality
          - DO NOT just enhance image quality - ACTUALLY REPOSITION the furniture
       
-      2. STRICT FURNITURE PRESERVATION:
-         - Keep the EXACT same furniture items - same design, color, material, size
+      2. INTELLIGENT FURNITURE CURATION & PLACEMENT:
+         - Keep good furniture: Maintain the EXACT same design, color, material, size
          - DO NOT replace furniture with different models
-         - DO NOT remove any furniture pieces
-         - Only their POSITION should change
+         - For OLD or WORN-OUT furniture: Reposition it to a less prominent location where it blends better
+         - For EXTRA or CLUTTERING furniture: Either reposition it optimally OR remove it entirely if it improves room aesthetics
+         - Goal: Create the most visually appealing and spacious room layout - prioritize aesthetics over keeping everything
       
       3. ROOM CLEANING & ORGANIZATION:
          - Organize and tidy up loose items (books, clothes, papers)
