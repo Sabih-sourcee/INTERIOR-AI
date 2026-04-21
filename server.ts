@@ -55,8 +55,7 @@ async function callVertexAI(model: string, contents: any, config?: any, isImageG
   // Add imageConfig for image generation tasks
   if (isImageGeneration) {
     requestBody.generationConfig.imageConfig = {
-      aspectRatio: "16:9",
-      mimeType: "image/png"
+      aspectRatio: "16:9"
     };
   }
   
